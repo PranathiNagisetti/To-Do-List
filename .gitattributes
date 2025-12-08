@@ -1,0 +1,3 @@
+backend/*.js linguist-detectable=true
+backend/**/*.js linguist-detectable=true
+*.js linguist-detectable=true
