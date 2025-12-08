@@ -1,48 +1,59 @@
-const express=require('express');
-const cors=require('cors');
+const express = require('express');
+const cors = require('cors');
+const path = require("path");
 
-const app=express();
+const app = express();
 app.use(cors());
 app.use(express.json());
 
-app.use(express.static(path.join(__dirname,"frontend")));
+// Serve frontend
+app.use(express.static(path.join(__dirname, "frontend")));
 
-let todos=[];
+let todos = [];
 
-app.get('/',(req,res)=>{
-    console.log("Default Route");
-    res.sendFile(path.join(__dirname,"frontend","todolist.html"));
-})
+// Serve main HTML page
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, "frontend", "todolist.html"));
+});
 
+// Get todos
 app.get('/todos', (req, res) => {
-    res.json(todos);
+  res.json(todos);
 });
 
-app.post('/add-item',(req,res)=>{
-    const {text}=req.body;
-    const newTodo={
-        id: Date.now(),  
-        text
-    };
-    todos.push(newTodo);
-    res.json({todos});
+// Add todo
+app.post('/add-item', (req, res) => {
+  const { text } = req.body;
+  const newTodo = {
+    id: Date.now(),
+    text
+  };
+  todos.push(newTodo);
+  res.json({ todos });
 });
 
+// Delete todo
+app.delete('/delete-item/:id', (req, res) => {
+  const { id } = req.params;
+  todos = todos.filter(todo => todo.id != id);
+  res.json({ todos });
+});
 
-app.delete('/delete-item/:id',(req,res)=>{
-    const{id}=req.params;
-    todos=todos.filter(todo=>todo.id!=id);
-    res.json({ message: 'Sucessfully Deleted!' });
+// Edit todo
+app.put('/edit-item/:id', (req, res) => {
+  const { id } = req.params;
+  const { text } = req.body;
 
-})
+  todos = todos.map(todo =>
+    todo.id == id ? { ...todo, text } : todo
+  );
 
-app.put('/edit-item/:id',(req,res)=>{
-    const {id}=req.params;
-    const {text}=req.body;
-    todos=todos.map(todo => todo.id==id?{...todo,text}:todo);
-    res.json({ message: 'Updated Sucessfully!' });
-})
+  res.json({ todos });
+});
 
-app.listen(3000,()=>{
-    console.log("Server started running on port!")
-})
+// Render requires PORT
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+  console.log(`Server running on port: ${PORT}`);
+});

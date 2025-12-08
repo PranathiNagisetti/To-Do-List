@@ -59,24 +59,27 @@
     window.onload = loadTodos;
 
     function loadTodos() {
-        fetch("/todos")
+      fetch("/todos")
         .then(res => res.json())
         .then(data => {
-            todos = data;
-            renderTodos();
+          todos = data;
+          renderTodos();
         });
     }
-
 
     function renderTodos() {
       const list = document.getElementById('todo-list');
       list.innerHTML = '';
+
       todos.forEach((todo, index) => {
         const li = document.createElement('li');
         li.className = 'todo-item';
+
         if (todo.editing) {
           li.innerHTML = `
-            <input class="form-control edit-input" type="text" value="${todo.text}" onkeyup="updateTodo(event, ${index})" />
+            <input class="form-control edit-input" type="text" value="${todo.text}"
+                  oninput="updateTempText(event, ${index})" />
+
             <div class="todo-actions">
               <button class="btn btn-success btn-sm" onclick="saveTodo(${index})">Save</button>
             </div>
@@ -85,70 +88,73 @@
           li.innerHTML = `
             <span>${todo.text}</span>
             <div class="todo-actions">
-              <button class="btn btn-sm btn-warning" onclick="editTodo(${index})">Edit</button>
-              <button class="btn btn-sm btn-danger" onclick="deleteTodo(${index})">Delete</button>
+              <button class="btn btn-warning btn-sm" onclick="editTodo(${index})">Edit</button>
+              <button class="btn btn-danger btn-sm" onclick="deleteTodo(${index})">Delete</button>
             </div>
           `;
         }
+
         list.appendChild(li);
       });
     }
 
+    function updateTempText(event, index) {
+      todos[index].text = event.target.value;
+    }
+
     function addTodo() {
-        let val = document.getElementById('todo-input');
-    console.log(val.value);
+      const input = document.getElementById('todo-input');
+      const text = input.value;
 
-    let text = val.value;
-
-    fetch('/add-item', {
+      fetch('/add-item', {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ text })
-    })
+      })
+      .then(res => res.json())
+      .then(data => {
+        todos = data.todos;
+        renderTodos();
+        input.value = "";
+      });
     }
 
     function deleteTodo(index) {
-         const id = todos[index].id;
+      const id = todos[index].id;
 
-    fetch(`/delete-item/${id}`, {
-      method: "DELETE",
-    })
-      .then((res)= res.json())
-      .then((data)=>{
-        todos=data.todos;
+      fetch(`/delete-item/${id}`, {
+        method: "DELETE",
+      })
+      .then(res => res.json())
+      .then(data => {
+        todos = data.todos;
         renderTodos();
       });
     }
 
     function editTodo(index) {
-      fetch(`/edit-item/${id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ text })
-    })
-
+      todos[index].editing = true;
       renderTodos();
     }
 
     function saveTodo(index) {
-        const id=todos[index].id;
-        const text=todos[index].text;
+      const id = todos[index].id;
+      const text = todos[index].text;
 
-        fetch(`http://localhost:3000/edit-item/${id}`, {
+      fetch(`/edit-item/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text }),
-        })
-        .then((res) => res.json())
-        .then((data) => {
-            todos=data.todos;
-            todos.forEach(todo => delete todo.editing); // remove editing flag
-            renderTodos();
-        });
+        body: JSON.stringify({ text })
+      })
+      .then(res => res.json())
+      .then(data => {
+        todos = data.todos;
+        todos.forEach(todo => delete todo.editing);
+        renderTodos();
+      });
     }
   </script>
+
 </body>
 
 </html>
