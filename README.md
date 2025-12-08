@@ -3,6 +3,8 @@
    A simple and efficient TODO application built using Node.js, Express, MongoDB, and Vanilla JavaScript for the frontend.
 Users can add tasks, and the data gets stored in a MongoDB database through API calls.
 
+<h3>Demo: https://to-do-list-3qix.onrender.com/</h3>
+
 <h2>🚀 Features</h2>
 
 <li>Add TODO items using a simple UI</li>
@@ -36,12 +38,11 @@ Users can add tasks, and the data gets stored in a MongoDB database through API 
       /project-folder
       │── frontend
       |    |──todolist.html
+      │── server.js
+      │── node_modules
       │── package.json
-      │── backend
-      │     ├── node_modules
-      │     ├── server.js
-      │     └── package.json
-      |     |── package-lock.json
+      |── package-lock.json
+      |── gitattributes
 
 
 <h2>▶️ How to Run</h2>
