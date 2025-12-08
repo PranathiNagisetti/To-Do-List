@@ -53,7 +53,6 @@
     <ul id="todo-list" class="list-unstyled"></ul>
   </div>
 
-
   <script>
     let todos = [];
     window.onload = loadTodos;
@@ -68,17 +67,17 @@
     }
 
     function renderTodos() {
-      const list = document.getElementById('todo-list');
-      list.innerHTML = '';
+      const list = document.getElementById("todo-list");
+      list.innerHTML = "";
 
       todos.forEach((todo, index) => {
-        const li = document.createElement('li');
-        li.className = 'todo-item';
+        const li = document.createElement("li");
+        li.className = "todo-item";
 
         if (todo.editing) {
           li.innerHTML = `
-            <input class="form-control edit-input" type="text" value="${todo.text}"
-                  oninput="updateTempText(event, ${index})" />
+            <input class="form-control edit-input" type="text" value="${todo.text}" 
+            oninput="todos[${index}].text = this.value" />
 
             <div class="todo-actions">
               <button class="btn btn-success btn-sm" onclick="saveTodo(${index})">Save</button>
@@ -98,25 +97,22 @@
       });
     }
 
-    function updateTempText(event, index) {
-      todos[index].text = event.target.value;
-    }
-
     function addTodo() {
-      const input = document.getElementById('todo-input');
-      const text = input.value;
+      const inp = document.getElementById("todo-input");
+      const text = inp.value.trim();
+      if (!text) return;
 
-      fetch('/add-item', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text })
+      fetch("/add-item", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text }),
       })
-      .then(res => res.json())
-      .then(data => {
-        todos = data.todos;
-        renderTodos();
-        input.value = "";
-      });
+        .then(res => res.json())
+        .then(data => {
+          todos = data.todos;
+          inp.value = "";
+          renderTodos();
+        });
     }
 
     function deleteTodo(index) {
@@ -125,11 +121,11 @@
       fetch(`/delete-item/${id}`, {
         method: "DELETE",
       })
-      .then(res => res.json())
-      .then(data => {
-        todos = data.todos;
-        renderTodos();
-      });
+        .then(res => res.json())
+        .then(data => {
+          todos = data.todos;
+          renderTodos();
+        });
     }
 
     function editTodo(index) {
@@ -144,16 +140,17 @@
       fetch(`/edit-item/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text })
+        body: JSON.stringify({ text }),
       })
-      .then(res => res.json())
-      .then(data => {
-        todos = data.todos;
-        todos.forEach(todo => delete todo.editing);
-        renderTodos();
-      });
+        .then(res => res.json())
+        .then(data => {
+          todos = data.todos;
+          todos.forEach(t => delete t.editing);
+          renderTodos();
+        });
     }
   </script>
+
 
 </body>
 
