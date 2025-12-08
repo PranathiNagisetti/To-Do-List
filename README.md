@@ -60,7 +60,7 @@ Install dependencies:
 
 Start the server:
 
-    node server.js
+    npm start
 
 
 Open the frontend:
