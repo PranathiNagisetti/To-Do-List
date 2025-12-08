@@ -1,3 +1,14 @@
+const path = require("path");
+
+// Serve static frontend files
+app.use(express.static(path.join(__dirname, "frontend")));
+
+// Default route → open your HTML file
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "frontend", "todolist.html"));
+});
+
+
 const express=require('express');
 const cors=require('cors');
 
